@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto-Core - Cifrador de Metadatos</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-color: #111827;
+            --text-color: #f3f4f6;
+            --accent-cyber: #a855f7;
+            --accent-cyan: #06b6d4;
+            --border-color: #1f2937;
+            --success-color: #10b981;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            background-color: var(--panel-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.7);
+        }
+
+        h1 {
+            color: var(--accent-cyber);
+            font-size: 1.4rem;
+            margin-top: 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .input-zone {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            background-color: #070a13;
+            color: #38bdf8;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            box-sizing: border-box;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .key-panel {
+            background-color: #1f2937;
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .key-panel input {
+            width: 70px;
+            background-color: #070a13;
+            color: #fff;
+            border: 1px solid var(--border-color);
+            padding: 6px;
+            border-radius: 4px;
+            text-align: center;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+            min-width: 150px;
+            background-color: #1e293b;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: inherit;
+            border-radius: 4px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            border-color: var(--accent-cyber);
+            color: var(--accent-cyber);
+        }
+
+        #btnCifrar:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .output-panel {
+            margin-top: 25px;
+            background-color: #070a13;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            min-height: 100px;
+            word-break: break-all;
+        }
+
+        .output-header {
+            color: var(--success-color);
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .output-text {
+            color: #a7f3d0;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Crypto-Core // Cifrador de Metadatos</h1>
+    
+    <div class="input-zone">
+        <label>Mensaje en texto plano / Código a proteger:</label>
+        <textarea id="textInput" placeholder="Introduce el mensaje que deseas proteger..."></textarea>
+        
+        <div class="key-panel">
+            <label for="cipherKey">Desplazamiento (Clave numérica):</label>
+            <input type="number" id="cipherKey" value="3" min="1" max="25">
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="btnCifrar">Cifrar Información</button>
+        <button id="btnDescifrar">Descifrar Información</button>
+    </div>
+
+    <div class="output-panel">
+        <div class="output-header" id="outputHeader">[Terminal] En reposo...</div>
+        <div class="output-text" id="outputText">Esperando flujo de datos en el ahora.</div>
+    </div>
+</div>
+
+<script>
+    // @ts-nocheck
+    // MOTOR LÓGICO DE CRIPTOGRAFÍA NATIVA
+    var textInput = document.getElementById('textInput');
+    var cipherKeyInput = document.getElementById('cipherKey');
+    var btnCifrar = document.getElementById('btnCifrar');
+    var btnDescifrar = document.getElementById('btnDescifrar');
+    var outputHeader = document.getElementById('outputHeader');
+    var outputText = document.getElementById('outputText');
+
+    // Algoritmo de enmascaramiento por desplazamiento (César Modificado)
+    function procesarTexto(texto, clave, modo) {
+        var resultado = '';
+        var desp = parseInt(clave) || 0;
+        
+        // Si el modo es descifrar, invertimos el desplazamiento del buffer
+        if (modo === 'descifrar') {
+            desp = -desp;
+        }
+
+        for (var i = 0; i < texto.length; i++) {
+            var codigoChar = texto.charCodeAt(i);
+            // Aplicamos desplazamiento directo al código ASCII de la Matrix
+            resultado += String.fromCharCode(codigoChar + desp);
+        }
+        return resultado;
+    }
+
+    // Evento 1: Encriptar datos
+    btnCifrar.addEventListener('click', function() {
+        var textoOriginal = textInput.value;
+        var clave = cipherKeyInput.value;
+        
+        if (!textoOriginal.trim()) {
+            outputHeader.textContent = '[ERROR]';
+            outputHeader.style.color = 'var(--accent-orange)';
+            outputText.textContent = 'La entrada de metadatos está vacía.';
+            return;
+        }
+
+        var textoEncriptado = procesarTexto(textoOriginal, clave, 'cifrar');
+        outputHeader.textContent = '[DATOS ENCRIPTADOS AD ADN PROTEGIDOS]';
+        outputHeader.style.color = 'var(--accent-cyan)';
+        outputText.textContent = textoEncriptado;
+    });
+
+    // Evento 2: Desencriptar datos
+    btnDescifrar.addEventListener('click', function() {
+        var textoCifrado = textInput.value;
+        var clave = cipherKeyInput.value;
+        
+        if (!textoCifrado.trim()) {
+            outputHeader.textContent = '[ERROR]';
+            outputText.textContent = 'Introduce el código cifrado para restaurar.';
+            return;
+        }
+
+        var textoRestaurado = procesarTexto(textoCifrado, clave, 'descifrar');
+        outputHeader.textContent = '[DATOS RESTAURADOS - FRECUENCIA ORIGEN]';
+        outputHeader.style.color = 'var(--success-color)';
+        outputText.textContent = textoRestaurado;
+    });
+</script>
+
+</body>
+</html>
